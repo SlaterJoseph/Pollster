@@ -19,4 +19,5 @@ class PollResponse(BaseModel):
     is_active: bool
     created_at: datetime
     active_until: Optional[datetime] = None
-    created_by = Optional[int] = None
+    created_by: Optional[int] = None
+    likes: int

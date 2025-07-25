@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from ..models.user_model import UserCreate, UserResponse
+from app.models.user_model import UserCreate, UserResponse
 
 user_storage = []
 user_id_counter = 1

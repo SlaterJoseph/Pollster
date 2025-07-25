@@ -19,7 +19,7 @@ class UserResponse(BaseModel):
     """
     User Response Model
     """
-    id: int
+    id: int | None = Field(default=None, )
     username: str
     password: str
     email: str

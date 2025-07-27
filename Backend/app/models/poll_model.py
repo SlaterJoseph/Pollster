@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from sqlmodel import SQLModel
 
-class PollCreate(BaseModel):
+class PollCreate(SQLModel):
     question: str
     description: Optional[str] = None
     possible_answers: list[str]
@@ -11,7 +11,7 @@ class PollCreate(BaseModel):
     active_until: Optional[datetime] = None
     created_by = Optional[int] = None
 
-class PollResponse(BaseModel):
+class PollResponse(SQLModel):
     id: int
     question: str
     description: Optional[str] = None

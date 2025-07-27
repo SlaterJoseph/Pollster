@@ -1,12 +1,13 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from sqlmodel import SQLModel, Field
 
-class UserCreate(BaseModel):
+class UserCreate(SQLModel):
     """
     User Create Model
     """
+    id: Optional[int] = Field(default=None, primary_key=True)
     username: str
     password: str
     email: str
@@ -15,11 +16,11 @@ class UserCreate(BaseModel):
     created_at: Optional[datetime] = None
 
 
-class UserResponse(BaseModel):
+class UserResponse(SQLModel):
     """
     User Response Model
     """
-    id: int
+    id: int | None = Field(default=None, primary_key=True)
     username: str
     password: str
     email: str

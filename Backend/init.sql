@@ -29,8 +29,7 @@ CREATE TABLE if NOT EXISTS responses (
     poll_id INT NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
     response INT NOT NULL REFERENCES poll_options(id),
     responded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, poll_id),
-    FOREIGN KEY (response) REFERENCES poll_options(id)
+    PRIMARY KEY (user_id, poll_id)
 );
 
 CREATE TABLE if NOT EXISTS comments (

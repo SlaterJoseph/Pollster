@@ -13,7 +13,7 @@ CREATE TABLE if NOT EXISTS polls (
     question VARCHAR(1024) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ending_at TIMESTAMP,
-    creator_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE
+    creator_id INT NULL REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE if NOT EXISTS poll_options (

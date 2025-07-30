@@ -1,20 +1,21 @@
 from dotenv import dotenv_values
 
-config = dotenv_values(".env")
-db_name, db_user, db_password, db_url = None, None, None, None
+class EnvConfig:
+    def __init__(self):
+        self.db_name = None
+        self.db_user = None
+        self.db_password = None
+        self.db_url = None
+        self.config = dotenv_values(".env")
 
-def adjust_env(env: str) -> None:
-    """
-    Loads the type of variables needed (dev, test, prod)
-    :param env: Variant needed
-    :return:
-    """
-    global db_name, db_user, db_password, db_url
-    env = env.upper()  # make it DEV, TEST, PROD
-    db_name = config.get(f"{env}_DB_NAME")
-    db_user = config.get(f"{env}_DB_USER")
-    db_password = config.get(f"{env}_DB_PASSWORD")
-    db_url = config.get(f"{env}_DB_URL")
+    def adjust_env(self, env: str):
+        env = env.upper()
+        self.db_name = self.config.get(f"{env}_DB_NAME")
+        self.db_user = self.config.get(f"{env}_DB_USER")
+        self.db_password = self.config.get(f"{env}_DB_PASSWORD")
+        self.db_url = self.config.get(f"{env}_DB_URL")
 
-    if not all([db_name, db_user, db_password, db_url]):
-        raise ValueError(f"Incomplete config for environment: {env}")
+        if not all([self.db_name, self.db_user, self.db_password, self.db_url]):
+            raise ValueError(f"Incomplete config for environment: {env}")
+
+env_config = EnvConfig()

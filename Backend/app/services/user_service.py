@@ -1,14 +1,14 @@
 from datetime import datetime
 from typing import Optional
 
-from app.models.user_model import UserCreate, UserResponse
+from app.models.user_model import User
 
 user_storage = []
 user_id_counter = 1
 
-def create_user(user: UserCreate) -> UserResponse:
+def create_user(user: User) -> User:
     """
-    Creating new user
+    Creating a new user
     :param user: The user payload being created
     :return: The UserResponse object
     """
@@ -17,7 +17,7 @@ def create_user(user: UserCreate) -> UserResponse:
     if get_user_by_username(user.username):
         raise ValueError("Username already exists")
 
-    new_user = UserResponse(
+    new_user = User(
         id=user_id_counter,
         username=user.username,
         password=user.password,
@@ -31,7 +31,7 @@ def create_user(user: UserCreate) -> UserResponse:
     return new_user
 
 
-def get_user_by_username(username: str) -> Optional[UserResponse]:
+def get_user_by_username(username: str) -> Optional[User]:
     """
     Getting account info from username
     :param username: Users username
@@ -42,7 +42,7 @@ def get_user_by_username(username: str) -> Optional[UserResponse]:
             return user
         return None
 
-def get_user_by_email(email: str) -> Optional[UserResponse]:
+def get_user_by_email(email: str) -> Optional[User]:
     """
     Getting account info from email
     :param email: Users email
@@ -53,7 +53,7 @@ def get_user_by_email(email: str) -> Optional[UserResponse]:
             return user
         return None
 
-def get_user_by_id(id: int) -> Optional[UserResponse]:
+def get_user_by_id(id: int) -> Optional[User]:
     """
     Getting account info from id
     :param id: Users id

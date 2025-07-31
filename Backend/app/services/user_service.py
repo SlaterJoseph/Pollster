@@ -1,65 +1,58 @@
-from datetime import datetime
-from typing import Optional
+from sqlalchemy.sql.selectable import SelectBase
 
-from app.models.user_model import User
+from app.models.user_model import User, CreateUser, ReturnUser
+from sqlmodel import select, Session
+from app.security.password import hash_password, verify_password
+from fastapi import status, HTTPException
 
-user_storage = []
-user_id_counter = 1
-
-def create_user(user: User) -> User:
+def create_user(user: CreateUser, session: Session) -> ReturnUser:
     """
-    Creating a new user
-    :param user: The user payload being created
-    :return: The UserResponse object
+    Create a new account
+    :param user: The user payload
+    :param session: The db session
+    :return: The return user payload
     """
-    global user_id_counter
+    new_user = User(username=user.username, email=user.email, created_at=user.created_at, password=hash_password(user.password))
+    session.add(new_user)
+    return ReturnUser.model_validate(new_user)
 
-    if get_user_by_username(user.username):
-        raise ValueError("Username already exists")
-
-    new_user = User(
-        id=user_id_counter,
-        username=user.username,
-        password=user.password,
-        email=user.email,
-        created_at=datetime.now(),
-        polls_voted=[]
-    )
-
-    user_storage.append(new_user)
-    user_id_counter += 1
-    return new_user
-
-
-def get_user_by_username(username: str) -> Optional[User]:
+def get_username_password(username: str, password: str, session: Session) -> ReturnUser:
     """
-    Getting account info from username
-    :param username: Users username
-    :return: Either None or UserResponse object
+    Login account using username
+    :param username: The username of the account
+    :param password: The password of the account
+    :param session: The db session
+    :return: The return user payload
     """
-    for user in user_storage:
-        if user.username == username:
-            return user
-        return None
+    statement = select(User).where(User.name == username)
+    return verify_account(statement, password, session)
 
-def get_user_by_email(email: str) -> Optional[User]:
+def get_email_password(email: str, password: str, session: Session) -> ReturnUser:
     """
-    Getting account info from email
-    :param email: Users email
-    :return: Either None or UserResponse object
+    Login account using username
+    :param email: The email of the account
+    :param password: The password of the account
+    :param session: The db session
+    :return: The return user payload
     """
-    for user in user_storage:
-        if user.email == email:
-            return user
-        return None
+    statement = select(User).where(User.email == email)
+    return verify_account(statement, password, session)
 
-def get_user_by_id(id: int) -> Optional[User]:
+def verify_account(statement: SelectBase[User], password: str, session: Session) -> ReturnUser:
     """
-    Getting account info from id
-    :param id: Users id
-    :return: Either none or UserResponse object
+    Verifying the password is correct, and the user exists
+    :param statement: The SQL query
+    :param password: The password of the user
+    :param session: The db session
+    :return: The return user payload
     """
-    for user in user_storage:
-        if user.id == id:
-            return user
-        return None
+    results = session.exec(statement)
+    user = results.first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    if verify_password(password, user.password):
+        return ReturnUser.model_validate(user)
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Password")

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing_extensions import Self
 from sqlmodel import SQLModel, Field
-from pydantic import model_validator, ValidationError, field_validator
+from pydantic import model_validator, ValidationError, field_validator, ConfigDict
 from app.security.password import verify_password, hash_password
 
 class User(SQLModel, table=True):
@@ -11,7 +11,7 @@ class User(SQLModel, table=True):
     username: str = Field(max_length=20)
     email: str = Field(max_length=50)
     password: str = Field(max_length=1024)
-    created_at: datetime | None = Field(default_factory=datetime.now(), nullable=False)
+    created_at: datetime | None = Field(default_factory=datetime.now, nullable=False)
     photo: str = Field(max_length=1024)
     description: str = Field(max_length=1024)
 
@@ -38,7 +38,7 @@ class CreateUser(SQLModel):
     confirm_email: str = Field(max_length=50)
     password: str = Field(max_length=1024)
     confirm_password: str = Field(max_length=1024)
-    created_at: datetime | None = Field(default_factory=datetime.now(), nullable=False)
+    created_at: datetime | None = Field(default_factory=datetime.now, nullable=False)
 
     @model_validator(mode='after')
     def validate_password(self) -> Self:
@@ -47,7 +47,14 @@ class CreateUser(SQLModel):
         return self
 
     @model_validator(mode='after')
-    def validate_password(self) -> Self:
+    def validate_email(self) -> Self:
         if self.email != self.confirm_email:
             raise ValidationError('Emails do not match')
         return self
+
+class ReturnUser(SQLModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int | None = Field(default=None, primary_key=True)
+    username: str = Field(max_length=20)
+    email: str = Field(max_length=50)

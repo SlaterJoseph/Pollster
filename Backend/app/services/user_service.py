@@ -1,65 +1,11 @@
-from datetime import datetime
-from typing import Optional
+from app.models.user_model import User, CreateUser, LoginUser
+from sqlmodel import select, Session
 
-from app.models.user_model import User
+def create_user(user: CreateUser, session: Session) -> User:
+    new_user = User(username=user.username, email=user.email, created_at=user.created_at)
 
-user_storage = []
-user_id_counter = 1
+def get_username_password(username: str, hashed_password: str, session: Session) -> bool:
+    pass
 
-def create_user(user: User) -> User:
-    """
-    Creating a new user
-    :param user: The user payload being created
-    :return: The UserResponse object
-    """
-    global user_id_counter
-
-    if get_user_by_username(user.username):
-        raise ValueError("Username already exists")
-
-    new_user = User(
-        id=user_id_counter,
-        username=user.username,
-        password=user.password,
-        email=user.email,
-        created_at=datetime.now(),
-        polls_voted=[]
-    )
-
-    user_storage.append(new_user)
-    user_id_counter += 1
-    return new_user
-
-
-def get_user_by_username(username: str) -> Optional[User]:
-    """
-    Getting account info from username
-    :param username: Users username
-    :return: Either None or UserResponse object
-    """
-    for user in user_storage:
-        if user.username == username:
-            return user
-        return None
-
-def get_user_by_email(email: str) -> Optional[User]:
-    """
-    Getting account info from email
-    :param email: Users email
-    :return: Either None or UserResponse object
-    """
-    for user in user_storage:
-        if user.email == email:
-            return user
-        return None
-
-def get_user_by_id(id: int) -> Optional[User]:
-    """
-    Getting account info from id
-    :param id: Users id
-    :return: Either none or UserResponse object
-    """
-    for user in user_storage:
-        if user.id == id:
-            return user
-        return None
+def get_email_password(username: str, hashed_password: str, session: Session) -> bool:
+    pass

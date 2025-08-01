@@ -1,12 +1,19 @@
 from datetime import datetime
+from typing import Optional
 
-from sqlmodel import Field, SQLModel
+from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 
-class Poll(SQLModel, table=True):
-    __tablename__ = "polls"
+from app.config.db_config import Base
 
-    id: int | None = Field(default=None, primary_key=True)
-    question: str = Field(nullable=False, max_length=1024)
-    created_at: datetime | None = Field(default_factory=datetime.now(), nullable=False)
-    ending_at: datetime | None = Field(default=None, nullable=False)
-    creator_id: int = Field(foreign_key="users.id", nullable=True)
+class Poll(Base):
+    __tablename__ = 'polls'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    question: Mapped[str] = mapped_column(String(300))
+    created_at: Mapped[datetime] = mapped_column(DateTime)
+    ending_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    creator_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
+    def __repr__(self) -> str:
+        return f"Poll( ID:{self.id!r}, Question:{self.question!r}"

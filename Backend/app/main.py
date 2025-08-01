@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import os
 
 from app.utils.env_handler import env_config
-from app.config.db_config import create_db_and_tables
+from app.config.db_config import get_engine
 from app.controller import *
 
 
@@ -12,7 +12,7 @@ from app.controller import *
 async def lifespan(app: FastAPI):
     env = os.getenv("APP_ENV", "dev")
     env_config.adjust_env(env)
-    create_db_and_tables()
+    get_engine()
     yield
 
 app = FastAPI(lifespan=lifespan)

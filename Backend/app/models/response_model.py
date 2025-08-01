@@ -1,8 +1,13 @@
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from pydantic import BaseModel, field_validator, model_validator, ConfigDict
+from typing_extensions import Self
+from typing import Optional
 
-from sqlmodel import SQLModel, Field
+Base = declarative_base()
 
-class ResponseModel(SQLModel, table=True):
+class ResponseModel(Base):
     __tablename__ = "responses"
 
     user_id: int = Field(foreign_key='users.id', primary_key=True)

@@ -5,15 +5,16 @@ from sqlmodel import select, Session
 from app.security.password import hash_password, verify_password
 from fastapi import status, HTTPException
 
-def create_user(user: CreateUser, session: Session) -> ReturnUser:
+async def create_user(user: CreateUser, session: Session) -> ReturnUser:
     """
     Create a new account
     :param user: The user payload
     :param session: The db session
     :return: The return user payload
     """
-    new_user = User(username=user.username, email=user.email, created_at=user.created_at, password=hash_password(user.password))
+    new_user = await User(username=user.username, email=user.email, created_at=user.created_at, password=hash_password(user.password))
     session.add(new_user)
+    await session.flush()
     return ReturnUser.model_validate(new_user)
 
 def get_username_password(username: str, password: str, session: Session) -> ReturnUser:

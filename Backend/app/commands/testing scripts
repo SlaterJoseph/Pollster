@@ -1,0 +1,14 @@
+All Tests
+pytest tests/ -v
+
+Registration
+pytest tests/test_user_registration.py -v
+
+Login Tests
+pytest tests/test_user_login.py -v
+
+Password Security Tests
+pytest tests/test_password_security.py -v
+
+Docker Testing Command
+docker compose run backend pytest tests/ -v

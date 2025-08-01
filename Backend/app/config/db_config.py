@@ -1,27 +1,27 @@
-from sqlalchemy.engine.base import Engine
-from sqlmodel import SQLModel, create_engine, Session
+from typing import Any
+
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import create_engine
+from sqlalchemy.schema import MetaData
+
 from app.models import *
 from app.utils.env_handler import env_config
 
 _engine = None
 
-
-def get_engine() -> Engine:
+def get_engine() -> Any:
     global _engine
+
     db_url = env_config.db_url
-
-    if _engine is None:
-        if db_url is None:
-            raise ValueError("db_url not set yet")
-
-        # Remove echo true when deploying
-        _engine = create_engine(db_url, echo=True)
+    # Remove echo when deploying
+    _engine = create_engine(db_url, echo=True)
+    build_metadata(_engine)
     return _engine
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(get_engine())
+def build_metadata(engine) -> None:
+    metadata = MetaData()
+    metadata.create_all(engine)
 
-def get_session():
-    with Session(get_engine()) as session:
-        yield session
+class Base(DeclarativeBase):
+    pass
 

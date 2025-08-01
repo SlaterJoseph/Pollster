@@ -24,6 +24,20 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  test:
+    build: .
+    container_name: fastapi-test
+    depends_on:
+      - test_db
+    environment:
+      - APP_ENV=test
+      - TEST_DB_URL=postgresql://my_test_user:test_pass@test_db:5432/my_test_db
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+    command: pytest tests/ -v
+    working_dir: /app
+
   test_db:
     image: postgres:15
     container_name: postgres-test-db
